@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: robmoloney
+      POSTGRES_PASSWORD: postgres1
+      POSTGRES_DB: usersdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "robmoloney" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  app:
+    build: .
+    container_name: spring_boot_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
